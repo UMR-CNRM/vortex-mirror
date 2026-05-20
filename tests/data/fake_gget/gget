@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+GUESSES="python3
+python2
+python2.7
+python"
+IFS="
+"
+
+for i in $GUESSES ; do
+  if which $i > /dev/null 2>&1 ; then
+    $i $0.py $*
+    exit $?
+  fi
+done
+
+echo "No Python Interpreter in the current PATH"
+exit 1

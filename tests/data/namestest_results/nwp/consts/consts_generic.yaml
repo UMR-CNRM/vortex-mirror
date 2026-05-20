@@ -1,0 +1,56 @@
+- - !test_names.core.SingleTest
+    description: !test_names.core.TestParameters
+      genv: '[cycle]'
+      kind: config
+      nativefmt: ascii
+      scope: void
+      source: toto.[nativefmt]
+    results: !test_names.core.TestResults
+    - default: &id001 !test_names.core.TestParameters
+        cutoff: assim
+        cycle: cy42_op2.67
+        date: 2018010100
+        geometry: global1198
+        gnamespace: gco.multi.fr
+        model: arpege
+        namespace: vortex.multi.fr
+        vapp: arpege
+        vconf: 4dvarfr
+      location: gget://gco.multi.fr/tampon/config.void.01.tgz?extract=toto.ascii
+  - !test_names.core.SingleTest
+    description: !test_names.core.TestParameters
+      genv: '[cycle]'
+      kind: config
+      nativefmt: json
+      objects: model
+      scope: oops
+    results: !test_names.core.TestResults
+    - default: *id001
+      location: gget://gco.multi.fr/tampon/config.oops.01.tgz?extract=model.json
+  - !test_names.core.SingleTest
+    description: !test_names.core.TestParameters
+      genv: '[cycle]'
+      kind: config
+      nativefmt: json
+      scope: void
+      source: toto.[nativefmt]
+    results: !test_names.core.TestResults
+    - default: *id001
+      location: gget://gco.multi.fr/tampon/config.void.01.tgz?extract=toto.json
+  - !test_names.core.SingleTest
+    description: !test_names.core.TestParameters
+      genv: '[cycle]'
+      kind: config
+      nativefmt: yaml
+      scope: void
+      source: toto.[nativefmt]
+    results: !test_names.core.TestResults
+    - default: *id001
+      location: gget://gco.multi.fr/tampon/config.void.01.tgz?extract=toto.yaml
+  - !test_names.core.SingleTest
+    description: !test_names.core.TestParameters
+      genv: '[cycle]'
+      kind: gpslist
+    results: !test_names.core.TestResults
+    - default: *id001
+      location: gget://gco.multi.fr/tampon/list.gpssol.19

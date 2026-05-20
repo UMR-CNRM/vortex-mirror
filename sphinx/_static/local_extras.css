@@ -1,0 +1,31 @@
+div.nb2sphinx-stdout {
+    white-space: pre;
+    margin: 5px 0px 0px 35px;
+    padding: 4px 4px 4px 4px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 1em;
+    background-color: #f0f0f0;
+}
+div.nb2sphinx-output {
+    white-space: pre;
+    margin: 5px 0px 0px 35px;
+    padding: 4px 4px 4px 4px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 1em;
+    font-style: italic;
+}
+div.nb2sphinx-tb {
+    white-space: pre;
+    margin: 0px 0px 0px 35px;
+    padding: 0px 4px 4px 4px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 1em;
+    background-color: #efa000;
+}
+span.output_indicator {
+    color: darkred;
+    font-weight: bold;
+}

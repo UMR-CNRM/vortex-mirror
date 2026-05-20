@@ -1,0 +1,4 @@
+# These things will be deleted by the makefile distclean
+*_slides.html
+*_doc.html
+cdn

@@ -1,31 +1,75 @@
 variables:
   PACKAGE_DIR: "vortex-nwp"
 
-include: "/ci/templates.yml"
+# include: "/ci/templates.yml"
 
-format:
-  script:
-    - pip install ruff==0.9.*
-    # Don't check formatting for test code yet
-    - ruff format --check ${PACKAGE_DIR}/src
+# format:
+#   script:
+#     - pip install ruff==0.9.*
+#     # Don't check formatting for test code yet
+#     - ruff format --check ${PACKAGE_DIR}/src
 
-lint:
-  script:
-    - pip install ruff==0.9.*
-    # Don't check test code yet
-    - ruff check ${PACKAGE_DIR}/src
+# lint:
+#   script:
+#     - pip install ruff==0.9.*
+#     # Don't check test code yet
+#     - ruff check ${PACKAGE_DIR}/src
 
-run-tests:
-  stage: test
+# run-tests:
+#   stage: test
+#   image: "python:3.12-slim"
+#   before_script:
+#     - pip install ${PACKAGE_DIR}/[dev]
+#   script:
+#     - cd ${PACKAGE_DIR} && pytest tests/test_config.py tests/tests_algo/test_basics.py tests/test_ecflow.py tests/test_geometries.py tests/test_user_remote_dtree.py tests/test_namespaces.py
+
+# make-release:
+#   variables:
+#     TWINE_REPOSITORY_URL: "https://test.pypi.org/legacy/"
+#     TWINE_USERNAME: "__token__"
+#     TWINE_PASSWORD: "$TESTPYPI_TOKEN"
+#     TWINE_CERT: "$MF_CA_PEM"
+
+stages:
+  - release
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PIP_TRUSTED_HOST: "nexus-sidev.meteo.fr"
+  PIP_INDEX_URL: "https://nexus-sidev.meteo.fr/repository/pypi-group/simple"
+  TWINE_REPOSITORY_URL: "https://nexus-sidev.meteo.fr/repository/pypi-vortex-snapshots/"
+
+sync-github-mirror:
+  stage: release
   image: "python:3.12-slim"
-  before_script:
-    - pip install ${PACKAGE_DIR}/[dev]
-  script:
-    - cd ${PACKAGE_DIR} && pytest tests/test_config.py tests/tests_algo/test_basics.py tests/test_ecflow.py tests/test_geometries.py tests/test_user_remote_dtree.py tests/test_namespaces.py
-
-make-release:
   variables:
-    TWINE_REPOSITORY_URL: "https://test.pypi.org/legacy/"
-    TWINE_USERNAME: "__token__"
-    TWINE_PASSWORD: "$TESTPYPI_TOKEN"
-    TWINE_CERT: "$MF_CA_PEM"
+    GITHUB_MIRROR_URL: "https://x-access-token:${CI_GH_PAT}@github.com/UMR-CNRM/vortex-mirror.git"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  before_script:
+    - apt update -y && apt install -y git git-filter-repo
+  script:
+    # Use Job token to authenticate through HTTPS, see
+    # https://docs.gitlab.com/ci/jobs/ci_job_token/#git-repository-cloning
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.meteo.fr/cnrm-gmap/vortex-monorepo.git cloned
+    - cd cloned
+    - git-filter-repo --subdirectory-filter vortex-nwp
+    - cp .git/filter-repo/commit-map commit-map
+    - |
+      cat >> header.txt <<EOF
+      This is a *read-only mirror* of the vortex source code repository
+
+      Please get in touch with the vortex team if you wish to contribute.
+
+      EOF
+    - cat header.txt README.md > README.md.new && mv README.md.new README.md
+    - head README.md
+    - git config user.email "gitlab.bot@meteo.fr"
+    - git config user.name "GitLab Bot"
+    - git commit -am "Prepend header message to README"
+    - git remote add mirror "$GITHUB_MIRROR_URL"
+    - GIT_SSL_CAINFO="$MF_CA_PEM" git push mirror main --tags --force
+  artifacts:
+    paths:
+      - ./commit-map
+  

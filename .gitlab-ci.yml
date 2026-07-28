@@ -71,5 +71,5 @@ sync-github-mirror:
     - GIT_SSL_CAINFO="$MF_CA_PEM" git push mirror main --tags --force
   artifacts:
     paths:
-      - ./commit-map
+      - cloned/commit-map
   

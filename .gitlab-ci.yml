@@ -23,12 +23,19 @@ run-tests:
   script:
     - cd ${PACKAGE_DIR} && pytest tests/test_config.py tests/tests_algo/test_basics.py tests/test_ecflow.py tests/test_geometries.py tests/test_user_remote_dtree.py tests/test_namespaces.py
 
-make-release:
+make-release-to-pypi:
+  stage: release
+  image: "python:3.12-slim"
+  - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ $RELEASE_TAG_PATTERN
   variables:
     TWINE_REPOSITORY_URL: "https://test.pypi.org/legacy/"
     TWINE_USERNAME: "__token__"
     TWINE_PASSWORD: "$TESTPYPI_TOKEN"
     TWINE_CERT: "$MF_CA_PEM"
+  script:
+    - pip install twine==6.1.0
+    - twine upload --verbose ${PACKAGE_DIR}/dist/*
+  when: manual
 
 sync-github-mirror:
   stage: release

@@ -1,3 +1,7 @@
+This is a *read-only mirror* of the vortex source code repository
+
+Please get in touch with the vortex team if you wish to contribute.
+
 ## vortex
 
 A Python library to write individual tasks in Numerical Weather
